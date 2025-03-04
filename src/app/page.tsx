@@ -1,45 +1,33 @@
 "use client";
 
+import { Advocate } from "@/types";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  const [advocates, setAdvocates] = useState<Array<Advocate>>([]);
+  const [searchTerm, setSearchTerm] = useState<string | null>(null);
+
+  const filteredAdvocates = advocates.filter(({ firstName, lastName, city, degree, specialties, phoneNumber }) => {
+    if (!searchTerm?.trim()) {
+      return true;
+    }
+
+    const sanitizedToken = searchTerm.toLowerCase();
+
+    return firstName.toLowerCase().includes(sanitizedToken) || lastName.toLowerCase().includes(sanitizedToken) || city.toLowerCase().includes(sanitizedToken) || degree.toLowerCase().includes(sanitizedToken) || (specialties.length > 0 && specialties.some(s => s.toLowerCase().includes(sanitizedToken))) || phoneNumber.toString().includes(sanitizedToken)
+  });
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm( e.target.value);
+
+  const handleResetSearch = () => setSearchTerm(null);
 
   useEffect(() => {
-    console.log("fetching advocates...");
     fetch("/api/advocates").then((response) => {
       response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
+        setAdvocates(jsonResponse.data as Array<Advocate>);
       });
     });
   }, []);
-
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
-
-    document.getElementById("search-term").innerHTML = searchTerm;
-
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
-      return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
-      );
-    });
-
-    setFilteredAdvocates(filteredAdvocates);
-  };
-
-  const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
-  };
 
   return (
     <main style={{ margin: "24px" }}>
@@ -51,8 +39,8 @@ export default function Home() {
         <p>
           Searching for: <span id="search-term"></span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <input style={{ border: "1px solid black" }} onChange={handleSearch} value={searchTerm ?? ''} />
+        <button onClick={handleResetSearch}>Reset Search</button>
       </div>
       <br />
       <br />
