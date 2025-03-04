@@ -1,6 +1,9 @@
 "use client";
 
+import { AdvocatesTable } from "@/components/AdvocatesTable";
+import { Controls } from "@/components/Controls";
 import { Advocate } from "@/types";
+import { Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -31,51 +34,13 @@ export default function Home() {
 
   return (
     <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={handleSearch} value={searchTerm ?? ''} />
-        <button onClick={handleResetSearch}>Reset Search</button>
-      </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>City</th>
-            <th>Degree</th>
-            <th>Specialties</th>
-            <th>Years of Experience</th>
-            <th>Phone Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAdvocates.map((advocate) => {
-            return (
-              <tr key={`${advocate.firstName}${advocate.lastName}${advocate.phoneNumber}`}>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <span key={s}>{s}</span>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <Text size="xl" mb="md" fw={700}>Solace Advocates</Text>
+      <Controls 
+        searchTerm={searchTerm ?? ''} 
+        onResetSearch={handleResetSearch} 
+        onSearch={handleSearch} 
+      />
+      <AdvocatesTable advocates={filteredAdvocates} />
     </main>
   );
 }
