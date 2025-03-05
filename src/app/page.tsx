@@ -2,7 +2,7 @@
 
 import { AdvocatesTable } from "@/components/AdvocatesTable";
 import { Controls } from "@/components/Controls";
-import { Advocate } from "@/types";
+import { Advocate, GetAdvocatesResponse } from "@/types";
 import { Text } from "@mantine/core";
 import { useEffect, useState } from "react";
 
@@ -43,9 +43,9 @@ export default function Home() {
     searchParams.append("pageNumber", pageNumber.toString());
 
     fetch(`/api/advocates?${searchParams.toString()}`).then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data as Array<Advocate>);
-        setTotalSize(jsonResponse.count as number);
+      response.json().then((jsonResponse: GetAdvocatesResponse) => {
+        setAdvocates(jsonResponse.data);
+        setTotalSize(jsonResponse.count);
       });
     });
   }, [pageSize, pageNumber]);
